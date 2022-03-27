@@ -3,7 +3,6 @@
 #include <engine/shared/config.h>
 #include <game/mapitems.h>
 
-#include <game/generated/protocol.h>
 
 #include "entities/pickup.h"
 #include "gamecontroller.h"
@@ -17,7 +16,6 @@ IGameController::IGameController(class CGameContext *pGameServer)
 	m_pGameType = "unknown";
 
 	//
-	DoWarmup(g_Config.m_SvWarmup);
 	m_UnpauseTimer = 0;
 	m_GameOverTick = -1;
 	m_SuddenDeath = 0;
@@ -93,7 +91,7 @@ void IGameController::EvaluateSpawnType(CSpawnEval *pEval, int Type)
 	}
 }
 
-bool IGameController::CanSpawn(int Team, vec2 *pOutPos)
+bool IGameController::CanSpawn(int Team, vec2 *pOutPos, int CID)
 {
 	CSpawnEval Eval;
 
@@ -101,24 +99,15 @@ bool IGameController::CanSpawn(int Team, vec2 *pOutPos)
 	if(Team == TEAM_SPECTATORS)
 		return false;
 
-	if(IsTeamplay())
+	if(!IsTeamplay())
 	{
-		Eval.m_FriendlyTeam = Team;
-
-		// first try own team spawn, then normal spawn and then enemy
-		EvaluateSpawnType(&Eval, 1+(Team&1));
-		if(!Eval.m_Got)
+		if(GameServer()->m_apPlayers[CID]->IsZombie())
 		{
-			EvaluateSpawnType(&Eval, 0);
-			if(!Eval.m_Got)
-				EvaluateSpawnType(&Eval, 1+((Team+1)&1));
+			EvaluateSpawnType(&Eval,1);
+		}else
+		{
+			EvaluateSpawnType(&Eval,2);
 		}
-	}
-	else
-	{
-		EvaluateSpawnType(&Eval, 0);
-		EvaluateSpawnType(&Eval, 1);
-		EvaluateSpawnType(&Eval, 2);
 	}
 
 	*pOutPos = Eval.m_Pos;
@@ -132,32 +121,30 @@ bool IGameController::OnEntity(const char* pName, vec2 Pivot, vec2 P0, vec2 P1, 
 	int Type = -1;
 	int SubType = 0;
 
-	if(str_comp(pName, "spawn") == 0)
-		m_aaSpawnPoints[0][m_aNumSpawnPoints[0]++] = Pos;
-	else if(str_comp(pName, "spawnRed") == 0)
+	if(str_comp(pName, "twSpawnZombie") == 0)
 		m_aaSpawnPoints[1][m_aNumSpawnPoints[1]++] = Pos;
-	else if(str_comp(pName, "spawnBlue") == 0)
+	else if(str_comp(pName, "twSpawnHuman") == 0)
 		m_aaSpawnPoints[2][m_aNumSpawnPoints[2]++] = Pos;
-	else if(str_comp(pName, "armor") == 0)
+	else if(str_comp(pName, "twArmor") == 0)
 		Type = POWERUP_ARMOR;
-	else if(str_comp(pName, "health") == 0)
+	else if(str_comp(pName, "twHealth") == 0)
 		Type = POWERUP_HEALTH;
-	else if(str_comp(pName, "shotgun") == 0)
+	else if(str_comp(pName, "twShotgun") == 0)
 	{
 		Type = POWERUP_WEAPON;
 		SubType = WEAPON_SHOTGUN;
 	}
-	else if(str_comp(pName, "grenade") == 0)
+	else if(str_comp(pName, "twGrenade") == 0)
 	{
 		Type = POWERUP_WEAPON;
 		SubType = WEAPON_GRENADE;
 	}
-	else if(str_comp(pName, "rifle") == 0)
+	else if(str_comp(pName, "twRifle") == 0)
 	{
 		Type = POWERUP_WEAPON;
 		SubType = WEAPON_RIFLE;
 	}
-	else if(str_comp(pName, "ninja") == 0 && g_Config.m_SvPowerups)
+	else if(str_comp(pName, "twNinja") == 0 && g_Config.m_SvPowerups)
 	{
 		Type = POWERUP_NINJA;
 		SubType = WEAPON_NINJA;
@@ -211,7 +198,8 @@ static bool IsSeparator(char c) { return c == ';' || c == ' ' || c == ',' || c =
 void IGameController::StartRound()
 {
 	ResetGame();
-
+	DoWarmup(g_Config.m_InfInfectDelay+1);
+	
 	m_RoundStartTick = Server()->Tick();
 	m_SuddenDeath = 0;
 	m_GameOverTick = -1;
@@ -223,6 +211,8 @@ void IGameController::StartRound()
 	char aBuf[256];
 	str_format(aBuf, sizeof(aBuf), "start round type='%s' teamplay='%d'", m_pGameType, m_GameFlags&GAMEFLAG_TEAMS);
 	GameServer()->Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
+
+	CureAll();
 }
 
 void IGameController::ChangeMap(const char *pToMap)
@@ -366,8 +356,15 @@ void IGameController::OnCharacterSpawn(class CCharacter *pChr)
 	pChr->IncreaseHealth(10);
 
 	// give default weapons
-	pChr->GiveWeapon(WEAPON_HAMMER, -1);
-	pChr->GiveWeapon(WEAPON_GUN, 10);
+	if(!pChr->GetPlayer()->IsZombie())
+	{
+		pChr->GiveWeapon(WEAPON_HAMMER, -1);
+		pChr->GiveWeapon(WEAPON_GUN, 10);
+	}else
+	{
+		pChr->GiveWeapon(WEAPON_HAMMER, -1);
+		pChr->SetWeapon(WEAPON_HAMMER);
+	}
 }
 
 void IGameController::DoWarmup(int Seconds)
@@ -438,11 +435,12 @@ bool IGameController::CanBeMovedOnBalance(int ClientID)
 void IGameController::Tick()
 {
 	// do warmup
-	if(!GameServer()->m_World.m_Paused && m_Warmup)
+	if(m_Warmup)
 	{
 		m_Warmup--;
-		if(!m_Warmup)
-			StartRound();
+		if(!m_Warmup){
+			PickZombie();
+		}
 	}
 
 	if(m_GameOverTick != -1)
@@ -768,4 +766,42 @@ int IGameController::ClampTeam(int Team)
 double IGameController::GetTime()
 {
 	return static_cast<double>(Server()->Tick() - m_RoundStartTick)/Server()->TickSpeed();
+}
+// infplus
+void IGameController::CureAll()
+{
+	for(int i=0;i < MAX_CLIENTS;i++)
+	{
+		CPlayer *pPlayer = GameServer()->m_apPlayers[i];
+		if(!pPlayer)
+			continue;
+		
+		pPlayer->Cure();
+	
+	}
+}
+
+void IGameController::PickZombie()
+{
+	int id=m_LastZombie,CID;
+	while(id==m_LastZombie)
+	{
+		id = rand()%NumPlayers();
+	}
+	CID = m_apHavePlayer[id];
+	GameServer()->m_apPlayers[id]->Infect();
+}
+
+int IGameController::NumPlayers()
+{
+	int num = 0,i = 0;
+	for(int ClientID = 0;ClientID < MAX_CLIENTS; ClientID++)
+	{
+		if(!GameServer()->m_apPlayers[ClientID])
+			continue;
+		m_apHavePlayer[i] = ClientID;
+		i++;
+		num++;
+	}
+	return num;
 }

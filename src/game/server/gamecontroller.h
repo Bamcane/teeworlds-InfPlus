@@ -4,6 +4,7 @@
 #define GAME_SERVER_GAMECONTROLLER_H
 
 #include <base/vmath.h>
+#include <engine/server.h>
 
 #ifdef _MSC_VER
 typedef __int32 int32_t;
@@ -70,6 +71,9 @@ protected:
 	int m_UnbalancedTick;
 	bool m_ForceBalanced;
 
+	//infplus
+	int m_apHavePlayer[MAX_CLIENTS];
+	int m_LastZombie = 0;
 public:
 	const char *m_pGameType;
 
@@ -140,7 +144,7 @@ public:
 	virtual void OnPlayerInfoChange(class CPlayer *pP);
 
 	//
-	virtual bool CanSpawn(int Team, vec2 *pPos);
+	virtual bool CanSpawn(int Team, vec2 *pPos,int CID);
 
 	/*
 
@@ -155,6 +159,12 @@ public:
 	virtual void PostReset();
 
 	double GetTime();
+
+	// infplus
+	void CureAll();
+	void PickZombie();
+	int NumPlayers();
+	bool IsWarmup(){ return m_Warmup;}
 };
 
 #endif

@@ -9,7 +9,7 @@
 #include <game/version.h>
 #include <game/collision.h>
 #include <game/gamecore.h>
-#include "gamemodes/mod.h"
+#include "gamemodes/infplus.h"
 
 #include <teeuniverses/components/localization.h>
 
@@ -1648,7 +1648,7 @@ void CGameContext::OnInit(/*class IKernel *pKernel*/)
 	//players = new CPlayer[MAX_CLIENTS];
 
 	// select gametype
-	m_pController = new CGameControllerMOD(this);
+	m_pController = new CGameControllerInf(this);
 
 	// setup core world
 	//for(int i = 0; i < MAX_CLIENTS; i++)
@@ -1682,14 +1682,11 @@ void CGameContext::OnInit(/*class IKernel *pKernel*/)
 				vec2 P3((x+1)*32.0f, (y+1)*32.0f);
 				switch(Index - ENTITY_OFFSET)
 				{
-					case ENTITY_SPAWN:
-						m_pController->OnEntity("twSpawn", Pivot, P0, P1, P2, P3, -1);
+					case ENTITY_SPAWN_ZOMBIE:
+						m_pController->OnEntity("twSpawnZombie", Pivot, P0, P1, P2, P3, -1);
 						break;
-					case ENTITY_SPAWN_RED:
-						m_pController->OnEntity("twSpawnRed", Pivot, P0, P1, P2, P3, -1);
-						break;
-					case ENTITY_SPAWN_BLUE:
-						m_pController->OnEntity("twSpawnBlue", Pivot, P0, P1, P2, P3, -1);
+					case ENTITY_SPAWN_HUMAN:
+						m_pController->OnEntity("twSpawnHuman", Pivot, P0, P1, P2, P3, -1);
 						break;
 					case ENTITY_FLAGSTAND_RED:
 						m_pController->OnEntity("twFlagStandRed", Pivot, P0, P1, P2, P3, -1);

@@ -102,6 +102,19 @@ public:
 	} m_Latency;
 
 	int m_Authed;
+	// infplus
+	void Infect(int By = -1,int Weapon = WEAPON_GAME);
+	void Cure(int By = -1);
+	void OnHero();
+	inline bool IsZombie(){return (m_Role >= ROLE_ZOMBIE);}
+	inline bool IsHero(){return (m_Role == ROLE_HERO);}
+	int GetRole(){return m_Role;}
+	enum
+	{
+		ROLE_HUMAN=0,
+		ROLE_HERO,
+		ROLE_ZOMBIE,
+	};//role
 
 private:
 	CCharacter *m_pCharacter;
@@ -122,6 +135,9 @@ private:
 	CTuningParams m_NextTuningParams;
 
 	void HandleTuningParams(); //This function will send the new parameters if needed
+
+	// infplus
+	int m_Role;
 
 public:
 	CTuningParams* GetNextTuningParams() { return &m_NextTuningParams; };

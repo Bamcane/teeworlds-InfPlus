@@ -23,6 +23,11 @@ CPlayer::CPlayer(CGameContext *pGameServer, int ClientID, int Team)
 	m_TeamChangeTick = Server()->Tick();
 	SetLanguage(Server()->GetClientLanguage(ClientID));
 
+	if(GameServer()->m_pController->IsWarmup())
+		m_Role = ROLE_HUMAN;
+	else
+		m_Role = ROLE_ZOMBIE;
+
 	m_Authed = IServer::AUTHED_NO;
 
 	m_PrevTuningParams = *pGameServer->Tuning();
@@ -161,12 +166,20 @@ void CPlayer::Snap(int SnappingClient)
 		return;
 
 	StrToInts(&pClientInfo->m_Name0, 4, Server()->ClientName(m_ClientID));
-	StrToInts(&pClientInfo->m_Clan0, 3, Server()->ClientClan(m_ClientID));
 	pClientInfo->m_Country = Server()->ClientCountry(m_ClientID);
+	StrToInts(&pClientInfo->m_Clan0, 3, "Human");
 	StrToInts(&pClientInfo->m_Skin0, 6, m_TeeInfos.m_SkinName);
-	pClientInfo->m_UseCustomColor = m_TeeInfos.m_UseCustomColor;
-	pClientInfo->m_ColorBody = m_TeeInfos.m_ColorBody;
-	pClientInfo->m_ColorFeet = m_TeeInfos.m_ColorFeet;
+	pClientInfo->m_UseCustomColor = false;
+
+	if(IsZombie())
+	{
+		StrToInts(&pClientInfo->m_Clan0, 3, "Zombie");
+		pClientInfo->m_UseCustomColor = true;
+		pClientInfo->m_ColorBody = 60;
+		pClientInfo->m_ColorFeet = 80;
+	}
+
+	if(IsHero())StrToInts(&pClientInfo->m_Skin0, 6, "oldman");
 
 	CNetObj_PlayerInfo *pPlayerInfo = static_cast<CNetObj_PlayerInfo *>(Server()->SnapNewItem(NETOBJTYPE_PLAYERINFO, id, sizeof(CNetObj_PlayerInfo)));
 	if(!pPlayerInfo)
@@ -339,7 +352,7 @@ void CPlayer::TryRespawn()
 {
 	vec2 SpawnPos;
 
-	if(!GameServer()->m_pController->CanSpawn(m_Team, &SpawnPos))
+	if(!GameServer()->m_pController->CanSpawn(m_Team, &SpawnPos, m_ClientID))
 		return;
 
 	m_Spawning = false;
@@ -356,4 +369,62 @@ const char* CPlayer::GetLanguage()
 void CPlayer::SetLanguage(const char* pLanguage)
 {
 	str_copy(m_aLanguage, pLanguage, sizeof(m_aLanguage));
+}
+
+void CPlayer::Cure(int By)
+{
+	
+	m_Role = ROLE_HUMAN;
+
+	if(m_pCharacter)
+	{
+		m_pCharacter->GiveWeapon(WEAPON_HAMMER,-1);
+		m_pCharacter->GiveWeapon(WEAPON_GUN,5);
+		m_pCharacter->SetWeapon(WEAPON_GUN);
+	}
+
+	if(By == -1)
+	{
+		return;
+	}else
+	{
+		char str[512] = {0};
+ 		sprintf(str,
+            "%s was cured by %s",
+            Server()->ClientName(m_ClientID),
+            Server()->ClientName(By));
+    	GameServer()->SendChatTarget(-1, str);
+	}
+
+}
+void CPlayer::Infect(int By, int Weapon)
+{
+	GameServer()->CreateExplosion(m_pCharacter->m_Pos, m_ClientID, WEAPON_HAMMER, true);
+
+	
+	if(m_pCharacter)
+	{
+		m_pCharacter->ClearWeapon();
+		m_pCharacter->GiveWeapon(WEAPON_HAMMER,-1);
+		m_pCharacter->SetWeapon(WEAPON_HAMMER);
+		m_pCharacter->SetHealth(10);
+	}
+
+	if(By == -1)
+	{
+		m_Role = ROLE_ZOMBIE;
+		GameServer()->CreateSound(m_pCharacter->m_Pos,SOUND_PLAYER_SPAWN);
+		KillCharacter();
+		return;
+	}
+
+	// send the kill message
+	CNetMsg_Sv_KillMsg Msg;
+	Msg.m_Killer = By;
+	Msg.m_Victim = m_ClientID;
+	Msg.m_Weapon = Weapon;
+	Msg.m_ModeSpecial = 0;
+	Server()->SendPackMsg(&Msg, MSGFLAG_VITAL, -1);
+
+	m_Role = ROLE_ZOMBIE;
 }

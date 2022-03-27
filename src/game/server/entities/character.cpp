@@ -698,7 +698,14 @@ void CCharacter::Die(int Killer, int Weapon)
 	m_Alive = false;
 	GameServer()->m_World.RemoveEntity(this);
 	GameServer()->m_World.m_Core.m_apCharacters[m_pPlayer->GetCID()] = 0;
-	GameServer()->CreateDeath(m_Pos, m_pPlayer->GetCID());
+
+	if(!GameServer()->m_pController->IsWarmup() && !m_pPlayer->IsZombie())
+	{
+		m_pPlayer->Infect();
+	}else
+	{
+		GameServer()->CreateDeath(m_Pos, m_pPlayer->GetCID());
+	}
 }
 
 bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon)
@@ -725,34 +732,66 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon)
 		m_DamageTaken = 0;
 		GameServer()->CreateDamageInd(m_Pos, 0, Dmg);
 	}
+	int ClientID = m_pPlayer->GetCID();
 
-	if(Dmg)
+	if(From >= 0 && GameServer()->m_apPlayers[From]->IsZombie() != GameServer()->m_apPlayers[ClientID]->IsZombie())
+	{
+		if(Dmg)
+		{
+			if(GameServer()->m_apPlayers[From]->IsZombie())
+			{
+				Dmg = 19;
+				if(m_Armor >= 10)
+				{
+					Dmg = 9;
+					m_Armor = 0;
+				}
+			}else if(m_Armor)
+			{
+				if(Dmg > 1)
+				{
+					m_Health--;
+					Dmg--;
+				}
+
+				if(Dmg > m_Armor)
+				{
+					Dmg -= m_Armor;
+					m_Armor = 0;
+				}
+				else
+				{
+					m_Armor -= Dmg;
+					Dmg = 0;
+				}
+			}
+
+			m_Health -= Dmg;
+		}
+
+		m_DamageTakenTick = Server()->Tick();
+	}else if(From == -1)
 	{
 		if(m_Armor)
 		{
-			if(Dmg > 1)
+				if(Dmg > 1)
 			{
-				m_Health--;
-				Dmg--;
+					m_Health--;
+					Dmg--;
 			}
 
-			if(Dmg > m_Armor)
+				if(Dmg > m_Armor)
 			{
-				Dmg -= m_Armor;
-				m_Armor = 0;
+					Dmg -= m_Armor;
+					m_Armor = 0;
 			}
-			else
+				else
 			{
-				m_Armor -= Dmg;
-				Dmg = 0;
+					m_Armor -= Dmg;
+					Dmg = 0;
 			}
 		}
-
-		m_Health -= Dmg;
 	}
-
-	m_DamageTakenTick = Server()->Tick();
-
 	// do damage Hit sound
 	if(From >= 0 && From != m_pPlayer->GetCID() && GameServer()->m_apPlayers[From])
 	{
@@ -768,7 +807,10 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon)
 	// check for death
 	if(m_Health <= 0)
 	{
-		Die(From, Weapon);
+		if(From == -1 || !GameServer()->m_apPlayers[From]->IsZombie() )
+			Die(From, Weapon);
+		else
+			m_pPlayer->Infect(From,Weapon);
 
 		// set attacker's face to happy (taunt!)
 		if (From >= 0 && From != m_pPlayer->GetCID() && GameServer()->m_apPlayers[From])
@@ -863,4 +905,10 @@ void CCharacter::Snap(int SnappingClient)
 	}
 
 	pCharacter->m_PlayerFlags = GetPlayer()->m_PlayerFlags;
+}
+
+void CCharacter::ClearWeapon()
+{
+	for (int i = 0; i < NUM_WEAPONS; i++)
+        m_aWeapons[i].m_Got = false;
 }
