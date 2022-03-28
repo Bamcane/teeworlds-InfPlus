@@ -401,30 +401,32 @@ void CPlayer::Infect(int By, int Weapon)
 {
 	GameServer()->CreateExplosion(m_pCharacter->m_Pos, m_ClientID, WEAPON_HAMMER, true);
 
-	
-	if(m_pCharacter)
-	{
-		m_pCharacter->ClearWeapon();
-		m_pCharacter->GiveWeapon(WEAPON_HAMMER,-1);
-		m_pCharacter->SetWeapon(WEAPON_HAMMER);
-		m_pCharacter->SetHealth(10);
-	}
-
 	if(By == -1)
 	{
 		m_Role = ROLE_ZOMBIE;
 		GameServer()->CreateSound(m_pCharacter->m_Pos,SOUND_PLAYER_SPAWN);
 		KillCharacter();
 		return;
+	}else if(By == -2)
+	{
+		m_Role = ROLE_ZOMBIE;
+	}else
+	{
+
+		// send the kill message
+		CNetMsg_Sv_KillMsg Msg;
+		Msg.m_Killer = By;
+		Msg.m_Victim = m_ClientID;
+		Msg.m_Weapon = Weapon;
+		Msg.m_ModeSpecial = 0;
+		Server()->SendPackMsg(&Msg, MSGFLAG_VITAL, -1);
+		if(m_pCharacter)
+		{
+			m_pCharacter->ClearWeapon();
+			m_pCharacter->GiveWeapon(WEAPON_HAMMER,-1);
+			m_pCharacter->SetWeapon(WEAPON_HAMMER);
+			m_pCharacter->SetHealth(10);
+		}
+		m_Role = ROLE_ZOMBIE;
 	}
-
-	// send the kill message
-	CNetMsg_Sv_KillMsg Msg;
-	Msg.m_Killer = By;
-	Msg.m_Victim = m_ClientID;
-	Msg.m_Weapon = Weapon;
-	Msg.m_ModeSpecial = 0;
-	Server()->SendPackMsg(&Msg, MSGFLAG_VITAL, -1);
-
-	m_Role = ROLE_ZOMBIE;
 }

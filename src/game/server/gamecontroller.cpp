@@ -742,13 +742,13 @@ void IGameController::DoWincheck()
 			}
 
 			// check score win condition
-			if((g_Config.m_SvScorelimit > 0 && Topscore >= g_Config.m_SvScorelimit) ||
-				(g_Config.m_SvTimelimit > 0 && (Server()->Tick()-m_RoundStartTick) >= g_Config.m_SvTimelimit*Server()->TickSpeed()*60))
+			if(g_Config.m_SvTimelimit > 0 && (Server()->Tick()-m_RoundStartTick) >= g_Config.m_SvTimelimit*Server()->TickSpeed()*60)
 			{
-				if(TopscoreCount == 1)
-					EndRound();
-				else
-					m_SuddenDeath = 1;
+				GameServer()->SendChatTarget(-1,"+| Humans survived!");// infplus dowincheck
+				GameServer()->SendChatTarget(-1,"+| All Humans +5 score!");// infplus dowincheck
+				GiveGifts(false,5);
+				GameServer()->CreateSoundGlobal(SOUND_CTF_CAPTURE,-1);
+				EndRound();
 			}
 		}
 	}
@@ -789,7 +789,8 @@ void IGameController::PickZombie()
 		id = rand()%NumPlayers();
 	}
 	CID = m_apHavePlayer[id];
-	GameServer()->m_apPlayers[id]->Infect();
+	m_LastZombie = CID;
+	GameServer()->m_apPlayers[CID]->Infect();
 }
 
 int IGameController::NumPlayers()
@@ -804,4 +805,16 @@ int IGameController::NumPlayers()
 		num++;
 	}
 	return num;
+}
+
+void IGameController::GiveGifts(bool team, int score)
+{
+	int PlayersNum = NumPlayers();
+	for(int ID = 0; ID < PlayersNum; ID++)
+	{
+		CPlayer *pPlayer = GameServer()->m_apPlayers[m_apHavePlayer[ID]];
+		if(pPlayer->IsZombie() == team)
+			pPlayer->m_Score += score;
+	}
+	return;
 }

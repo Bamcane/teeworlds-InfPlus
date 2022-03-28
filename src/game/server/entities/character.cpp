@@ -699,13 +699,9 @@ void CCharacter::Die(int Killer, int Weapon)
 	GameServer()->m_World.RemoveEntity(this);
 	GameServer()->m_World.m_Core.m_apCharacters[m_pPlayer->GetCID()] = 0;
 
-	if(!GameServer()->m_pController->IsWarmup() && !m_pPlayer->IsZombie())
-	{
-		m_pPlayer->Infect();
-	}else
-	{
-		GameServer()->CreateDeath(m_Pos, m_pPlayer->GetCID());
-	}
+	GameServer()->CreateDeath(m_Pos, m_pPlayer->GetCID());
+	if(!GameServer()->m_pController->IsWarmup())
+		m_pPlayer->Infect(-2);
 }
 
 bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon)
@@ -810,7 +806,10 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon)
 		if(From == -1 || !GameServer()->m_apPlayers[From]->IsZombie() )
 			Die(From, Weapon);
 		else
+		{
 			m_pPlayer->Infect(From,Weapon);
+			GameServer()->m_apPlayers[From]->m_Score += 2;
+		}
 
 		// set attacker's face to happy (taunt!)
 		if (From >= 0 && From != m_pPlayer->GetCID() && GameServer()->m_apPlayers[From])

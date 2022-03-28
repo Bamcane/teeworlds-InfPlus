@@ -165,6 +165,7 @@ public:
 	void PickZombie();
 	int NumPlayers();
 	bool IsWarmup(){ return m_Warmup;}
+	void GiveGifts(bool team, int score);// Send Scores for a Team. ture is Zombie,false is humans
 };
 
 #endif

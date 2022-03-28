@@ -29,6 +29,29 @@ void CGameControllerInf::Tick()
 		else
 			Humans++;
 	}
+
+	// Do win check
+
+	if(m_GameOverTick == -1 && !m_Warmup) {
+        if (!Humans) {
+            EndRound();
+			GameServer()->SendChatTarget(-1,"☢| Zombies infected all humans!");
+			GameServer()->SendChatTarget(-1,"☢| All Zombies +5 score!");
+			GiveGifts(true,5);
+			GameServer()->CreateSoundGlobal(SOUND_CTF_CAPTURE,-1);
+            return;
+        }else if(!Zombies)
+		{
+			EndRound();
+			GameServer()->SendChatTarget(-1,"⊕| Humans cured all zombies!");
+			GameServer()->SendChatTarget(-1,"☢| All Humans +6 score!");
+			GiveGifts(false,6);
+			GameServer()->CreateSoundGlobal(SOUND_CTF_CAPTURE,-1);
+            return;
+		}
+    }
+	DoWincheck();
+
 	// If player < 2
 	if(Humans + Zombies < 2)
 	{
@@ -48,27 +71,6 @@ void CGameControllerInf::Tick()
 	}
 	IGameController::Tick();
 
-	// Do win check
-
-	if(m_GameOverTick == -1 && !m_Warmup) {
-        if (!Humans) {
-            EndRound();
-			GameServer()->SendChatTarget(-1,"☢|Zombies infected all humans!");
-            return;
-        }else if(!Zombies)
-		{
-			EndRound();
-			GameServer()->SendChatTarget(-1,"⊕|Humans cured all zombies!");
-            return;
-		}
-    }
-	if(m_GameOverTick != -1 && m_GameOverTick - m_RoundStartTick == g_Config.m_SvTimelimit * Server()->TickSpeed())
-	{
-		char str[512] = {0};
- 		sprintf(str,
-            "+| %s Humans survived!",
-            Humans);
-		GameServer()->SendChatTarget(-1,str);
-	}
+	
 
 }
