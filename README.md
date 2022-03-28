@@ -19,6 +19,24 @@ the game, including new versions, custom maps and much more.
 
 Originally written by Magnus Auvinen.
 
+
+Teeworlds-InfPlus Mod
+---------------------------
+This mod was generated and modified from  
+[teeworldsmods2/teeworlds-frame](https://github.com/ErrorDreemurr/teeworlds-InfPlus).  
+Its purpose is for the refactory  
+[inf++ mod](https:github.com/SeekDreamStudio/Teeworlds-InfPlusPlus).  
+
+and join some unique features.  
+
+这个模组是使用了下方模板,并基于它修改  
+[teeworldsmods2/teeworlds-frame](https://github.com/ErrorDreemurr/teeworlds-InfPlus).  
+它的目的是为了重构[Inf++模组](https:github.com/SeekDreamStudio/Teeworlds-InfPlusPlus).  
+
+以及添加有趣的特性  
+
+And some tw06-mod readme.md  
+
 tw06mod-localization branch
 ---------------------------
 Author: Necropotame, FlowerFell-Sans
