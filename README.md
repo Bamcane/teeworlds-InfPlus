@@ -32,7 +32,7 @@ and join some unique features.
 
 它的目的是为了重构 [Inf++模组](https:github.com/SeekDreamStudio/Teeworlds-InfPlusPlus)  
 
-以及添加有趣的特性  
+以及添加独特的特性  
 
 And some tw06-mod readme.md  
 
