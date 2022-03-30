@@ -8,5 +8,25 @@
             "key": "Available languages: {str:ListOfLanguage}",
             "value": "可用语言: {str:ListOfLanguage}"
         },
+        {
+            "key": "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nNeed 2 players to start game",
+            "value": "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n需要2名玩家才能开始游戏"
+        },
+        {
+            "key": "☢| Zombies infected all humans!",
+            "value": "☢| 僵尸感染了所有人类！"
+        },
+        {
+            "key": "!| All Zombies +5 score!",
+            "value": "!| 所有僵尸加5分！"
+        },
+        {
+            "key": "⊕| Humans cured all zombies!",
+            "value": "⊕| 人类治疗了所有僵尸！"
+        },
+        {
+            "key": "!| All Humans +6 score!",
+            "value": "!| 所有人类加6分！"
+        }
     ]
 }

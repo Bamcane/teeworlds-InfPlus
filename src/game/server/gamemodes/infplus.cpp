@@ -36,7 +36,7 @@ void CGameControllerInf::Tick()
         if (!Humans) {
             EndRound();
 			GameServer()->SendChatTarget(-1,"☢| Zombies infected all humans!");
-			GameServer()->SendChatTarget(-1,"☢| All Zombies +5 score!");
+			GameServer()->SendChatTarget(-1,"!| All Zombies +5 score!");
 			GiveGifts(true,5);
 			GameServer()->CreateSoundGlobal(SOUND_CTF_CAPTURE,-1);
             return;
@@ -44,7 +44,7 @@ void CGameControllerInf::Tick()
 		{
 			EndRound();
 			GameServer()->SendChatTarget(-1,"⊕| Humans cured all zombies!");
-			GameServer()->SendChatTarget(-1,"☢| All Humans +6 score!");
+			GameServer()->SendChatTarget(-1,"!| All Humans +6 score!");
 			GiveGifts(false,6);
 			GameServer()->CreateSoundGlobal(SOUND_CTF_CAPTURE,-1);
             return;
