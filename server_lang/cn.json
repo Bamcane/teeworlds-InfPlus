@@ -13,6 +13,38 @@
             "value": "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n需要2名玩家才能开始游戏"
         },
         {
+            "key": "'{str:PlayerName}' entered and joined the game",
+            "value": "'{str:PlayerName}' 进入服务器并加入了游戏"
+        },
+        {
+            "key": "'{str:PlayerName}' has left the game",
+            "value": "'{str:PlayerName}' 离开了游戏"
+        },
+        {
+            "key": "'{str:PlayerName}' has left the game ({str:Reason})",
+            "value": "'{str:PlayerName}' 离开了游戏 ({str:Reason})"
+        },
+        {
+            "key": "To change the language, please use /language, or check /cmdlist",
+            "value": "修改语言请使用/language, 或者查看/cmdlist"
+        },
+        {
+            "key": "------Cmdlist-----",
+            "value": "------指令菜单-----"
+        },
+        {
+            "key": "Command:",
+            "value": "指令:"
+        },
+        {
+            "key": "Mod made by ErrorDreemurr",
+            "value": "模组由ErrorDreemurr制作"
+        },
+        {
+            "key": "Thanks for play!",
+            "value": "感谢游玩!"
+        },
+        {
             "key": "☢| Zombies infected all humans!",
             "value": "☢| 僵尸感染了所有人类！"
         },

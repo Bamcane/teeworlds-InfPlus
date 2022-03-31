@@ -580,9 +580,17 @@ void CGameContext::OnClientEnter(int ClientID)
 {
 	//world.insert_entity(&players[client_id]);
 	m_apPlayers[ClientID]->Respawn();
+	switch (Server()->ClientCountry(ClientID))
+	{
+	case 156:m_apPlayers[ClientID]->SetLanguage("cn");
+		break;
+	
+	default:m_apPlayers[ClientID]->SetLanguage("en");
+		break;
+	}
 	char aBuf[512];
-	str_format(aBuf, sizeof(aBuf), "'%s' entered and joined the %s", Server()->ClientName(ClientID), m_pController->GetTeamName(m_apPlayers[ClientID]->GetTeam()));
-	SendChat(-1, CGameContext::CHAT_ALL, aBuf);
+	SendChatTarget(-1,_("'{str:PlayerName}' entered and joined the game"), "PlayerName", Server()->ClientName(ClientID), NULL);
+	SendChatTarget(ClientID, _("To change the language, please use /language, or check /cmdlist"));
 
 	str_format(aBuf, sizeof(aBuf), "team_join player='%d:%s' team=%d", ClientID, Server()->ClientName(ClientID), m_apPlayers[ClientID]->GetTeam());
 	Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
@@ -1544,6 +1552,15 @@ void CGameContext::ConAbout(IConsole::IResult *pResult, void *pUserData)
 		str_format(aBuf, sizeof(aBuf), "Sources: %s", MOD_SOURCES);
 		pThis->Console()->Print(IConsole::OUTPUT_LEVEL_CHAT, "chat", aBuf);
 	}
+	CGameContext *pSelf = (CGameContext *)pUserData;
+	int ClientID = pResult->GetClientID();
+
+    if (!pSelf->m_apPlayers[ClientID])
+        return;
+
+    pSelf->SendChatTarget(ClientID,_("----------------"));
+    pSelf->SendChatTarget(ClientID,_("Mod made by ErrorDreemurr"));
+	pSelf->SendChatTarget(ClientID,_("Thanks for play!"));
 }
 
 void CGameContext::ConLanguage(IConsole::IResult *pResult, void *pUserData)
@@ -1598,6 +1615,7 @@ void CGameContext::ConLanguage(IConsole::IResult *pResult, void *pUserData)
         pSelf->SendChatTarget(ClientID, Buffer.buffer());
     }
 	
+   
 	return;
 }
 
@@ -1616,6 +1634,44 @@ void CGameContext::ConsoleOutputCallback_Chat(const char *pStr, void *pUser)
 	if(pThis->m_ConsoleOutput_Target >= 0 && pThis->m_ConsoleOutput_Target < MAX_CLIENTS)
 		pThis->SendChatTarget(pThis->m_ConsoleOutput_Target, pStr);
 }
+
+// infplus
+
+void CGameContext::ConInfect(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+    int ClientID = clamp(pResult->GetInteger(0), 0, MAX_CLIENTS - 1);
+
+    if (!pSelf->m_apPlayers[ClientID])
+        return;
+
+    pSelf->m_apPlayers[ClientID]->Infect();
+}
+
+void CGameContext::ConCure(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+    int ClientID = clamp(pResult->GetInteger(0), 0, MAX_CLIENTS - 1);
+
+    if (!pSelf->m_apPlayers[ClientID])
+        return;
+
+    pSelf->m_apPlayers[ClientID]->Cure();
+}
+
+void CGameContext::ConCmdlist(IConsole::IResult *pResult, void *pUserData)
+{
+	CGameContext *pSelf = (CGameContext *)pUserData;
+    int ClientID = clamp(pResult->GetInteger(0), 0, MAX_CLIENTS - 1);
+
+    if (!pSelf->m_apPlayers[ClientID])
+        return;
+
+    pSelf->SendChatTarget(ClientID,_("------Cmdlist-----"));
+    pSelf->SendChatTarget(ClientID,_("Command:"));
+	pSelf->SendChatTarget(ClientID,_("about, cmdlist, language"));
+};
+// infplus end
 
 void CGameContext::OnConsoleInit()
 {
@@ -1650,6 +1706,11 @@ void CGameContext::OnConsoleInit()
 	Console()->Register("language", "s", CFGFLAG_CHAT, ConLanguage, this, "Show information about the mod");
 	
 	Console()->Chain("sv_motd", ConchainSpecialMotdupdate, this);
+	// infplus
+	Console()->Register("inf_cure", "i", CFGFLAG_SERVER, ConCure, this, "Cure a player");
+	Console()->Register("inf_infect", "i", CFGFLAG_SERVER, ConInfect, this, "Infect a player");
+	
+	Console()->Register("cmdlist", "", CFGFLAG_CHAT, ConCmdlist, this, "Show all cmds");
 }
 
 void CGameContext::OnInit(/*class IKernel *pKernel*/)
@@ -1835,8 +1896,12 @@ bool CGameContext::IsClientPlayer(int ClientID)
 	return m_apPlayers[ClientID] && m_apPlayers[ClientID]->GetTeam() == TEAM_SPECTATORS ? false : true;
 }
 
+
+
 const char *CGameContext::GameType() { return m_pController && m_pController->m_pGameType ? m_pController->m_pGameType : ""; }
 const char *CGameContext::Version() { return GAME_VERSION; }
 const char *CGameContext::NetVersion() { return GAME_NETVERSION; }
 
 IGameServer *CreateGameServer() { return new CGameContext; }
+
+

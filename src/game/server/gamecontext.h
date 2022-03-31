@@ -79,6 +79,11 @@ class CGameContext : public IGameServer
 	static void ConClearVotes(IConsole::IResult *pResult, void *pUserData);
 	static void ConVote(IConsole::IResult *pResult, void *pUserData);
 	static void ConchainSpecialMotdupdate(IConsole::IResult *pResult, void *pUserData, IConsole::FCommandCallback pfnCallback, void *pCallbackUserData);
+	// infplus
+	static void ConInfect(IConsole::IResult *pResult, void *pUserData);
+	static void ConCure(IConsole::IResult *pResult, void *pUserData);
+
+	static void ConCmdlist(IConsole::IResult *pResult, void *pUserData);
 
 	CGameContext(int Resetting);
 	void Construct(int Resetting);
@@ -87,6 +92,8 @@ class CGameContext : public IGameServer
 
 	int m_ConsoleOutputHandle_ChatPrint;
 	int m_ConsoleOutput_Target;
+
+	
 
 public:
 	int m_ZoneHandle_TeeWorlds;
@@ -201,6 +208,9 @@ public:
 	virtual const char *GameType();
 	virtual const char *Version();
 	virtual const char *NetVersion();
+
+	// infplus
+
 };
 
 inline int64_t CmaskAll() { return -1LL; }
