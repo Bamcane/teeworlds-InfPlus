@@ -5,7 +5,7 @@
 #include <game/server/gamecontroller.h>
 #include <game/server/entities/flag.h>
 #include <game/server/entity.h>
-#include <src/base/vmath.h>
+#include <base/vmath.h>
 #include <game/server/gamecontext.h>
 
 // you can subclass GAMECONTROLLER_CTF, GAMECONTROLLER_TDM etc if you want
