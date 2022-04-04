@@ -5,6 +5,7 @@
 
 // this include should perhaps be removed
 #include "entities/character.h"
+#include "entities/heroaura.h"
 #include "gamecontext.h"
 
 // player object
@@ -106,15 +107,24 @@ public:
 	void Infect(int By = -1,int Weapon = WEAPON_GAME);
 	void Cure(int By = -1);
 	void OnHero();
+
 	inline bool IsZombie(){return (m_Role >= ROLE_ZOMBIE);}
 	inline bool IsHero(){return (m_Role == ROLE_HERO);}
+
 	int GetRole(){return m_Role;}
+
+	bool m_AuraPiecesDel = false;
+	int m_AuraPiecesNum = 0;
+	int m_AuraNum = 0;
+	CAura *m_AuraCheck[64];
+
 	enum
 	{
-		ROLE_HUMAN=0,
-		ROLE_HERO,
-		ROLE_ZOMBIE,
+	ROLE_HUMAN=0,
+	ROLE_HERO,
+	ROLE_ZOMBIE,
 	};//role
+	int m_Role;
 
 private:
 	CCharacter *m_pCharacter;
@@ -137,7 +147,6 @@ private:
 	void HandleTuningParams(); //This function will send the new parameters if needed
 
 	// infplus
-	int m_Role;
 
 public:
 	CTuningParams* GetNextTuningParams() { return &m_NextTuningParams; };

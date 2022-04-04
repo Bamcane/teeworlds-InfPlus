@@ -179,7 +179,11 @@ void CPlayer::Snap(int SnappingClient)
 		pClientInfo->m_ColorFeet = 80;
 	}
 
-	if(IsHero())StrToInts(&pClientInfo->m_Skin0, 6, "oldman");
+	if(IsHero())
+	{
+		StrToInts(&pClientInfo->m_Skin0, 6, "random");
+		StrToInts(&pClientInfo->m_Clan0, 3, "Hero");
+	}
 
 	CNetObj_PlayerInfo *pPlayerInfo = static_cast<CNetObj_PlayerInfo *>(Server()->SnapNewItem(NETOBJTYPE_PLAYERINFO, id, sizeof(CNetObj_PlayerInfo)));
 	if(!pPlayerInfo)
@@ -326,8 +330,13 @@ void CPlayer::SetTeam(int Team, bool DoChatMsg)
 	char aBuf[512];
 	if(DoChatMsg)
 	{
-		str_format(aBuf, sizeof(aBuf), "'%s' joined the %s", Server()->ClientName(m_ClientID), GameServer()->m_pController->GetTeamName(Team));
-		GameServer()->SendChat(-1, CGameContext::CHAT_ALL, aBuf);
+		if(Team == TEAM_SPECTATORS)
+		{
+			GameServer()->SendChatTarget(-1, "'{str:PlayerName}' joined the spectators", "PlayerName", Server()->ClientName(m_ClientID));
+		}else
+		{
+			GameServer()->SendChatTarget(-1, "'{str:PlayerName}' joined the game", "PlayerName", Server()->ClientName(m_ClientID));
+		}
 	}
 
 	KillCharacter();
@@ -378,7 +387,8 @@ void CPlayer::SetLanguage(const char* pLanguage)
 
 void CPlayer::Cure(int By)
 {
-	
+	m_AuraPiecesNum = 0;
+	m_AuraNum = 0;
 	m_Role = ROLE_HUMAN;
 
 	if(m_pCharacter)
@@ -386,24 +396,15 @@ void CPlayer::Cure(int By)
 		m_pCharacter->GiveWeapon(WEAPON_HAMMER,-1);
 		m_pCharacter->GiveWeapon(WEAPON_GUN,5);
 		m_pCharacter->SetWeapon(WEAPON_GUN);
+		m_pCharacter->SetAmmoMax(AMMOMAX_HUMAN);
 	}
-
-	if(By == -1)
-	{
-		return;
-	}else
-	{
-		char str[512] = {0};
- 		sprintf(str,
-            "%s was cured by %s",
-            Server()->ClientName(m_ClientID),
-            Server()->ClientName(By));
-    	GameServer()->SendChatTarget(-1, str);
-	}
-
+	return;
 }
+
 void CPlayer::Infect(int By, int Weapon)
 {
+	m_AuraPiecesNum = 0;
+	m_AuraNum = 0;
 	GameServer()->CreateExplosion(m_pCharacter->m_Pos, m_ClientID, WEAPON_HAMMER, true);
 
 	if(By == -1)
@@ -411,7 +412,6 @@ void CPlayer::Infect(int By, int Weapon)
 		m_Role = ROLE_ZOMBIE;
 		GameServer()->CreateSound(m_pCharacter->m_Pos,SOUND_PLAYER_SPAWN);
 		KillCharacter();
-		return;
 	}else if(By == -2)
 	{
 		m_Role = ROLE_ZOMBIE;
@@ -431,7 +431,30 @@ void CPlayer::Infect(int By, int Weapon)
 			m_pCharacter->GiveWeapon(WEAPON_HAMMER,-1);
 			m_pCharacter->SetWeapon(WEAPON_HAMMER);
 			m_pCharacter->SetHealth(10);
+			m_pCharacter->SetAmmoMax(AMMOMAX_HUMAN);
 		}
 		m_Role = ROLE_ZOMBIE;
 	}
+	GameServer()->SendChatTarget(m_ClientID,"You are Zombie now, Infect them!");
+}
+
+void CPlayer::OnHero()
+{
+	m_AuraPiecesNum = 0;
+	m_AuraNum = 0;
+	GameServer()->SendChatTarget(-1, "'{str:PlayerName}' is Hero now!", "PlayerName", Server()->ClientName(m_ClientID));
+	GameServer()->SendBroadcast("You are Hero now, Save them!", m_ClientID);
+	GameServer()->SendChatTarget(m_ClientID, "You are Hero now, Save them!");
+	m_Role = ROLE_HERO;
+	if(m_pCharacter)
+	{
+		m_pCharacter->ClearWeapon();
+		m_pCharacter->GiveWeapon(WEAPON_GRENADE, 3);
+		m_pCharacter->GiveWeapon(WEAPON_RIFLE, 3);
+		m_pCharacter->GiveWeapon(WEAPON_SHOTGUN, 3);
+		m_pCharacter->GiveWeapon(WEAPON_GUN, 3);
+		m_pCharacter->GiveWeapon(WEAPON_HAMMER, -1);
+		m_pCharacter->SetAmmoMax(AMMOMAX_HERO);
+	}
+	
 }

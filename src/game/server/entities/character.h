@@ -4,6 +4,8 @@
 #define GAME_SERVER_ENTITIES_CHARACTER_H
 
 #include <game/server/entity.h>
+#include <game/server/player.h>
+#include <engine/shared/config.h>
 #include <game/generated/server_data.h>
 #include <game/generated/protocol.h>
 
@@ -67,6 +69,8 @@ public:
 	// infplus
 	void ClearWeapon();
 	void SetHealth(int hp){m_Health = hp;}
+	void SetAmmoMax(int max){ m_AmmoMax = max;}
+	
 
 private:
 	// player controlling this character
@@ -135,6 +139,11 @@ private:
 	CCharacterCore m_SendCore; // core that we should send
 	CCharacterCore m_ReckoningCore; // the dead reckoning core
 
+
+	// infplus
+
+	
+	int m_AmmoMax = AMMOMAX_HUMAN;
 };
 
 #endif

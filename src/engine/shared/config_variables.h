@@ -115,5 +115,5 @@ MACRO_CONFIG_INT(DbgResizable, dbg_resizable, 0, 0, 0, CFGFLAG_CLIENT, "Enables 
 
 // infplus
 
-MACRO_CONFIG_INT(InfInfectDelay, inf_infectdelay, 10, 0, 0, CFGFLAG_CLIENT, "Enables window resizing")
+MACRO_CONFIG_INT(InfInfectDelay, inf_infectdelay, 10, 0, 0, CFGFLAG_SERVER, "Infect Delay")
 #endif

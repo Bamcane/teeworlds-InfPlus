@@ -25,6 +25,62 @@
             "value": "'{str:PlayerName}' 离开了游戏 ({str:Reason})"
         },
         {
+            "key": "'{str:PlayerName}' joined the game",
+            "value": "'{str:PlayerName}' 加入了游戏"
+        },
+        {
+            "key": "'{str:PlayerName}' joined the spectators",
+            "value": "'{str:PlayerName}' 加入了旁观者"
+        },
+        {
+            "key": "Vote aborted",
+            "value": "投票中止"
+        },
+        {
+            "key": "Vote passed",
+            "value": "投票通过"
+        },
+        {
+            "key": "Vote failed",
+            "value": "投票否决"
+        },
+        {
+            "key": "Spectators aren't allowed to start a vote.",
+            "value": "旁观者不能提出投票"
+        },
+        {
+            "key": "Wait for current vote to end before calling a new one.",
+            "value": "等待当前投票结束再提出新投票"
+        },
+        {
+            "key": "You must wait {str:Time} seconds before making another vote",
+            "value": "你必须等待{str:Time}秒才能再次提出投票"
+        },
+        {
+            "key": "'{str:PlayerName}' called vote to change server option '{str:Option}' ({str:Reason})",
+            "value": "'{str:PlayerName}' 投票改变服务器设置 '{str:Option}' ({str:Reason})"
+        },
+        {
+            "key": "'{str:Option}' isn't an option on this server",
+            "value": "'{str:Option}' 在这个服务器上不是一个设置"
+        },
+        {
+            "key": "Server does not allow voting to kick players",
+            "value": "服务器禁止投票踢出任何玩家"
+        },
+        {
+            "key": "You can't kick yourself",
+            "value": "你不能踢出自己"
+        },
+        {
+            "key": "You can't kick admins",
+            "value": "你不能踢出管理员"
+        },
+        {
+            "key": "'{str:OldName}' changed name to '{str:NewName}'",
+            "value": "'{str:OldName}' 改名为 '{str:NewName}'"
+        },
+        {
             "key": "To change the language, please use /language, or check /cmdlist",
             "value": "修改语言请使用/language, 或者查看/cmdlist"
         },
@@ -50,7 +106,7 @@
         },
         {
             "key": "!| All Zombies +5 score!",
-            "value": "!| 所有僵尸加5分！"
+            "value": "!| 所有僵尸加5分!"
         },
         {
             "key": "⊕| Humans cured all zombies!",
@@ -58,7 +114,44 @@
         },
         {
             "key": "!| All Humans +6 score!",
-            "value": "!| 所有人类加6分！"
+            "value": "!| 所有人类加6分!"
+        },
+        {
+            "key": "+| Humans survived!",
+            "value": "+| 人类生存了下来!"
+        },
+        {
+            "key": "+| All Humans +5 score!",
+            "value": "+| 所有人类加5分!"
+        },
+        {
+            "key": "You are Zombie now, Infect them!",
+            "value": "你现在是僵尸了, 感染他们!"
+        },
+        {
+            "key": "You are Hero now, Save them!",
+            "value": "你现在是英雄了, 拯救他们!"
+        },
+        {
+            "key": "'{str:PlayerName}' is Hero now!",
+            "value": "'{str:PlayerName}' 现在是英雄!"
+        },
+        {
+            "key": "Hero found the aura pieces!",
+            "value": "英雄找到了光环碎片!"
+        },
+        {
+            "key": "Hero got the 'Hero Aura'!",
+            "value": "英雄获得了'英雄光环'!"
+        },
+        {
+            "key": "You got a 'Hero Aura'",
+            "value": "你获得了一个'英雄光环'"
+        },
+        {
+            "key": "Hero rejects death...",
+            "value": "英雄拒绝了死亡..."
         }
+        
     ]
 }

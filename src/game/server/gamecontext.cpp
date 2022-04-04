@@ -436,7 +436,7 @@ void CGameContext::SwapTeams()
 	if(!m_pController->IsTeamplay())
 		return;
 
-	SendChat(-1, CGameContext::CHAT_ALL, "Teams were swapped");
+	SendChatTarget(-1, "Teams were swapped");
 
 	for(int i = 0; i < MAX_CLIENTS; ++i)
 	{
@@ -476,7 +476,7 @@ void CGameContext::OnTick()
 		// abort the kick-vote on player-leave
 		if(m_VoteCloseTime == -1)
 		{
-			SendChat(-1, CGameContext::CHAT_ALL, "Vote aborted");
+			SendChatTarget(-1, "Vote aborted");
 			EndVote();
 		}
 		else
@@ -531,7 +531,7 @@ void CGameContext::OnTick()
 				Console()->ExecuteLine(m_aVoteCommand, -1);
 				Server()->SetRconCID(IServer::RCON_CID_SERV);
 				EndVote();
-				SendChat(-1, CGameContext::CHAT_ALL, "Vote passed");
+				SendChatTarget(-1, "Vote passed");
 
 				if(m_apPlayers[m_VoteCreator])
 					m_apPlayers[m_VoteCreator]->m_LastVoteCall = 0;
@@ -539,7 +539,7 @@ void CGameContext::OnTick()
 			else if(m_VoteEnforce == VOTE_ENFORCE_NO || time_get() > m_VoteCloseTime)
 			{
 				EndVote();
-				SendChat(-1, CGameContext::CHAT_ALL, "Vote failed");
+				SendChatTarget(-1, "Vote failed");
 			}
 			else if(m_VoteUpdate)
 			{
@@ -754,9 +754,7 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 			int Timeleft = pPlayer->m_LastVoteCall + Server()->TickSpeed()*60 - Now;
 			if(pPlayer->m_LastVoteCall && Timeleft > 0)
 			{
-				char aChatmsg[512] = {0};
-				str_format(aChatmsg, sizeof(aChatmsg), "You must wait %d seconds before making another vote", (Timeleft/Server()->TickSpeed())+1);
-				SendChatTarget(ClientID, aChatmsg);
+				SendChatTarget(ClientID, "You must wait {str:Time} seconds before making another vote", "Time", (Timeleft/Server()->TickSpeed())+1);
 				return;
 			}
 
@@ -777,6 +775,7 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 									pOption->m_aDescription, pReason);
 						str_format(aDesc, sizeof(aDesc), "%s", pOption->m_aDescription);
 						str_format(aCmd, sizeof(aCmd), "%s", pOption->m_aCommand);
+						SendChatTarget(-1, "'{str:PlayerName}' called vote to change server option '{str:Option}' ({str:Reason})","PlayerName", Server()->ClientName(ClientID),"Option", pOption->m_aDescription, "Reason", pReason);
 						break;
 					}
 
@@ -786,7 +785,7 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 				if(!pOption)
 				{
 					str_format(aChatmsg, sizeof(aChatmsg), "'%s' isn't an option on this server", pMsg->m_Value);
-					SendChatTarget(ClientID, aChatmsg);
+					SendChatTarget(ClientID, "'{str:Option}' isn't an option on this server", "Option", pMsg->m_Value);
 					return;
 				}
 			}
@@ -877,7 +876,6 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 
 			if(aCmd[0])
 			{
-				SendChat(-1, CGameContext::CHAT_ALL, aChatmsg);
 				StartVote(aDesc, aCmd, pReason);
 				pPlayer->m_Vote = 1;
 				pPlayer->m_VotePos = m_VotePos = 1;
@@ -983,7 +981,7 @@ void CGameContext::OnMessage(int MsgID, CUnpacker *pUnpacker, int ClientID)
 			{
 				char aChatText[256];
 				str_format(aChatText, sizeof(aChatText), "'%s' changed name to '%s'", aOldName, Server()->ClientName(ClientID));
-				SendChat(-1, CGameContext::CHAT_ALL, aChatText);
+				SendChatTarget(-1, "'{str:OldName}' changed name to '{str:NewName}'", "OldName", aOldName, "NewName", Server()->ClientName(ClientID));
 			}
 			Server()->SetClientClan(ClientID, pMsg->m_pClan);
 			Server()->SetClientCountry(ClientID, pMsg->m_Country);
@@ -1671,6 +1669,8 @@ void CGameContext::ConCmdlist(IConsole::IResult *pResult, void *pUserData)
     pSelf->SendChatTarget(ClientID,_("Command:"));
 	pSelf->SendChatTarget(ClientID,_("about, cmdlist, language"));
 };
+
+
 // infplus end
 
 void CGameContext::OnConsoleInit()
@@ -1703,7 +1703,8 @@ void CGameContext::OnConsoleInit()
 	Console()->Register("vote", "r", CFGFLAG_SERVER, ConVote, this, "Force a vote to yes/no");
 	
 	Console()->Register("about", "", CFGFLAG_CHAT, ConAbout, this, "Show information about the mod");
-	Console()->Register("language", "s", CFGFLAG_CHAT, ConLanguage, this, "Show information about the mod");
+	Console()->Register("language", "s", CFGFLAG_CHAT, ConLanguage, this, "change language");
+	Console()->Register("lang", "s", CFGFLAG_CHAT, ConLanguage, this, "change language");
 	
 	Console()->Chain("sv_motd", ConchainSpecialMotdupdate, this);
 	// infplus
@@ -1780,8 +1781,8 @@ void CGameContext::OnInit(/*class IKernel *pKernel*/)
 					case ENTITY_FLAGSTAND_RED:
 						m_pController->OnEntity("twFlagStandRed", Pivot, P0, P1, P2, P3, -1);
 						break;
-					case ENTITY_FLAGSTAND_BLUE:
-						m_pController->OnEntity("twFlagStandBlue", Pivot, P0, P1, P2, P3, -1);
+					case ENTITY_FLAGSTAND_HERO:
+						m_pController->OnEntity("twFlagStandHero", Pivot, P0, P1, P2, P3, -1);
 						break;
 					case ENTITY_ARMOR_1:
 						m_pController->OnEntity("twArmor", Pivot, P0, P1, P2, P3, -1);
@@ -1903,5 +1904,8 @@ const char *CGameContext::Version() { return GAME_VERSION; }
 const char *CGameContext::NetVersion() { return GAME_NETVERSION; }
 
 IGameServer *CreateGameServer() { return new CGameContext; }
+
+// infplus
+
 
 

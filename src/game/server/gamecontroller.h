@@ -24,6 +24,8 @@ class IGameController
 {
 	vec2 m_aaSpawnPoints[3][64];
 	int m_aNumSpawnPoints[3];
+	
+	
 
 	class CGameContext *m_pGameServer;
 	class IServer *m_pServer;
@@ -72,8 +74,8 @@ protected:
 	bool m_ForceBalanced;
 
 	//infplus
-	int m_apHavePlayer[MAX_CLIENTS];
 	int m_LastZombie = 0;
+	int m_LastHero = 1;
 public:
 	const char *m_pGameType;
 
@@ -163,9 +165,14 @@ public:
 	// infplus
 	void CureAll();
 	void PickZombie();
+	void PickHero();
 	int NumPlayers();
 	bool IsWarmup(){ return m_Warmup;}
 	void GiveGifts(bool team, int score);// Send Scores for a Team. ture is Zombie,false is humans
+
+	vec2 m_aaFlagPoints[2][64];
+	int m_aNumFlagPoints[2];
+	int m_apHavePlayer[MAX_CLIENTS];
 };
 
 #endif

@@ -3,10 +3,11 @@
 #include <game/server/gamecontext.h>
 #include "flag.h"
 
-CFlag::CFlag(CGameWorld *pGameWorld, int Team)
+CFlag::CFlag(CGameWorld *pGameWorld, int Team, vec2 StandPos)
 : CEntity(pGameWorld, CGameWorld::ENTTYPE_FLAG)
 {
 	m_Team = Team;
+	m_StandPos = StandPos;
 	m_ProximityRadius = ms_PhysSize;
 	m_pCarryingCharacter = NULL;
 	m_GrabTick = 0;

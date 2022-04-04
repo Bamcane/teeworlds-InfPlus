@@ -32,6 +32,8 @@ IGameController::IGameController(class CGameContext *pGameServer)
 	m_aNumSpawnPoints[0] = 0;
 	m_aNumSpawnPoints[1] = 0;
 	m_aNumSpawnPoints[2] = 0;
+	m_aNumFlagPoints[0] = 0;
+	m_aNumFlagPoints[1] = 0;
 }
 
 IGameController::~IGameController()
@@ -440,6 +442,7 @@ void IGameController::Tick()
 		m_Warmup--;
 		if(!m_Warmup){
 			PickZombie();
+			// PickHero is in infplus.cpp
 		}
 	}
 
@@ -783,14 +786,27 @@ void IGameController::CureAll()
 
 void IGameController::PickZombie()
 {
-	int id=m_LastZombie,CID;
-	while(id==m_LastZombie)
+	int id, CID = m_LastZombie;
+	while(CID == m_LastZombie)
 	{
 		id = rand()%NumPlayers();
+		CID = m_apHavePlayer[id];
 	}
 	CID = m_apHavePlayer[id];
 	m_LastZombie = CID;
 	GameServer()->m_apPlayers[CID]->Infect();
+}
+
+void IGameController::PickHero()
+{
+	int id, CID = m_LastHero;
+	while(GameServer()->m_apPlayers[CID]->IsZombie() && CID == m_LastHero)
+	{
+		id = rand()%NumPlayers();
+		CID = m_apHavePlayer[id];
+	}
+	m_LastHero = CID;
+	GameServer()->m_apPlayers[CID]->OnHero();
 }
 
 int IGameController::NumPlayers()
