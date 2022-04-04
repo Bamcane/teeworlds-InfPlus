@@ -396,7 +396,7 @@ void CPlayer::Cure(int By)
 		m_pCharacter->GiveWeapon(WEAPON_HAMMER,-1);
 		m_pCharacter->GiveWeapon(WEAPON_GUN,5);
 		m_pCharacter->SetWeapon(WEAPON_GUN);
-		m_pCharacter->SetAmmoMax(AMMOMAX_HUMAN);
+		m_pCharacter->SetAmmoMax(10);
 	}
 	return;
 }
@@ -431,7 +431,7 @@ void CPlayer::Infect(int By, int Weapon)
 			m_pCharacter->GiveWeapon(WEAPON_HAMMER,-1);
 			m_pCharacter->SetWeapon(WEAPON_HAMMER);
 			m_pCharacter->SetHealth(10);
-			m_pCharacter->SetAmmoMax(AMMOMAX_HUMAN);
+			m_pCharacter->SetAmmoMax(10);
 		}
 		m_Role = ROLE_ZOMBIE;
 	}
@@ -454,7 +454,7 @@ void CPlayer::OnHero()
 		m_pCharacter->GiveWeapon(WEAPON_SHOTGUN, 3);
 		m_pCharacter->GiveWeapon(WEAPON_GUN, 3);
 		m_pCharacter->GiveWeapon(WEAPON_HAMMER, -1);
-		m_pCharacter->SetAmmoMax(AMMOMAX_HERO);
+		m_pCharacter->SetAmmoMax(5);
 	}
 	
 }

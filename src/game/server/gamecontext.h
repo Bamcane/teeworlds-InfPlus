@@ -210,6 +210,7 @@ public:
 	virtual const char *NetVersion();
 
 	// infplus
+	
 };
 
 inline int64_t CmaskAll() { return -1LL; }

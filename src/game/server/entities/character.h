@@ -143,7 +143,7 @@ private:
 	// infplus
 
 	
-	int m_AmmoMax = AMMOMAX_HUMAN;
+	int m_AmmoMax = 10;
 };
 
 #endif
