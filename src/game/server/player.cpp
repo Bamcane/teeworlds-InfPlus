@@ -461,7 +461,7 @@ void CPlayer::OnHero()
 
 bool CPlayer::IsZombie() const
 {
-	if(GameServer()->m_apPlayers[m_ClientID])
+	if(m_pCharacter)
 	{
 		return (m_Role > ROLE_HERO);
 	}
@@ -470,7 +470,7 @@ bool CPlayer::IsZombie() const
 
 bool CPlayer::IsHero() const
 {
-	if(GameServer()->m_apPlayers[m_ClientID])
+	if(m_pCharacter)
 	{
 		return (m_Role == ROLE_HERO);
 	}
