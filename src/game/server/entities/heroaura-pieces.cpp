@@ -50,7 +50,7 @@ void CAuraPieces::Tick()
 
 			if(!GameServer()->m_apPlayers[m_OwnerCheck]->IsHero())
 			{
-				GameServer()->m_apPlayers[m_Owner]->m_AuraPiecesNum--
+				GameServer()->m_apPlayers[m_Owner]->m_AuraPiecesNum--;
 				GameWorld()->RemoveEntity(this);
 				GameWorld()->DestroyEntity(this);
 			}
