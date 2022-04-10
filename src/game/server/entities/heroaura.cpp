@@ -31,7 +31,7 @@ void CAura::Tick()
 		GameWorld()->RemoveEntity(this);
 		GameWorld()->DestroyEntity(this);
 	}
-	else
+	else if(GameServer()->m_apPlayers[m_Owner])
 	{
 		m_Pos = GameServer()->GetPlayerChar(m_Owner)->m_Pos + (GetDir(m_Degres*pi/180) * m_Distance);
 		if ( m_Degres + 5 < 360 )

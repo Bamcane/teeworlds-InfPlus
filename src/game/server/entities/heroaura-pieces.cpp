@@ -44,7 +44,7 @@ void CAuraPieces::Tick()
 		else if( m_Distance < m_StartDistance )
 			m_DistanceCheck = true;
 
-		if(m_OwnerCheck)
+		if(m_OwnerCheck && GameServer()->m_apPlayers[m_Owner])
 		{
 			m_StartPos = GameServer()->GetPlayerChar(m_Owner)->m_Pos;
 
