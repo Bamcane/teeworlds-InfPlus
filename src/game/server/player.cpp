@@ -231,16 +231,6 @@ void CPlayer::FakeSnap(int SnappingClient)
 
 void CPlayer::OnDisconnect(const char *pReason)
 {
-	if(IsHero())
-	{
-		m_AuraPiecesDel = true;
-		for(int i;i <= m_AuraNum;i++)
-		{
-			GameServer()->m_pWorld->RemoveEntity(m_AuraCheck[i]);
-			GameServer()->m_pWorld->DestroyEntity(m_AuraCheck[i]);
-		}
-		m_AuraNum = 0;
-	}
 	KillCharacter();
 
 	if(Server()->ClientIngame(m_ClientID))

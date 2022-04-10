@@ -68,8 +68,11 @@ void CAuraPieces::Tick()
 				GameWorld()->RemoveEntity(this);
 				GameWorld()->DestroyEntity(this);
 			}
-		}
-		else
+		}else if(m_OwnerCheck && !GameServer()->m_apPlayers[m_Owner])
+		{
+			GameWorld()->RemoveEntity(this);
+			GameWorld()->DestroyEntity(this);
+		}else
 		{
 			HitCharacter();
 			if( m_DistanceCheck )
