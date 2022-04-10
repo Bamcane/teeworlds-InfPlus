@@ -458,3 +458,13 @@ void CPlayer::OnHero()
 	}
 	
 }
+
+bool CPlayer::IsZombie() const
+{
+	return (m_Role > ROLE_HERO);
+}
+
+bool CPlayer::IsHero() const
+{
+	return (m_Role == ROLE_HERO);
+}

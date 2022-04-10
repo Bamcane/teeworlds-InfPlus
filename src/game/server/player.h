@@ -12,8 +12,6 @@
 class CPlayer
 {
 	MACRO_ALLOC_POOL_ID()
-	CCharacter *m_pCharacter;
-	CGameContext *m_pGameServer;
 
 public:
 	CPlayer(CGameContext *pGameServer, int ClientID, int Team);
@@ -110,8 +108,8 @@ public:
 	void Cure(int By = -1);
 	void OnHero();
 
-	inline bool IsZombie(){if(m_pGameServer->m_apPlayers[m_ClientID]){return (m_Role >= ROLE_ZOMBIE);}}
-	inline bool IsHero(){if(m_pGameServer->m_apPlayers[m_ClientID]){return (m_Role == ROLE_HERO);}}
+	bool IsZombie() const;
+	bool IsHero() const;
 
 	int GetRole(){return m_Role;}
 
@@ -129,7 +127,9 @@ public:
 	int m_Role;
 
 private:
-
+	
+	CCharacter *m_pCharacter;
+	CGameContext *m_pGameServer;
 	CGameContext *GameServer() const { return m_pGameServer; }
 	IServer *Server() const;
 
