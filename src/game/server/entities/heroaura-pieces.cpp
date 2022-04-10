@@ -103,26 +103,29 @@ void CAuraPieces::HitCharacter()
 	int Num = GameServer()->m_World.FindEntities(m_Pos, 8.0f, (CEntity**)apCloseCCharacters, MAX_CLIENTS, CGameWorld::ENTTYPE_CHARACTER);
 	for(int i = 0; i < Num; i++)
 	{
-		float Len = distance(apCloseCCharacters[i]->m_Pos, m_Pos);
-		if(Len < apCloseCCharacters[i]->m_ProximityRadius+2.0f)
+		if(apCloseCCharacters[i])
 		{
-			if(apCloseCCharacters[i]->GetPlayer()->IsHero())
+			float Len = distance(apCloseCCharacters[i]->m_Pos, m_Pos);
+			if(Len < apCloseCCharacters[i]->m_ProximityRadius+2.0f)
 			{
-				apCloseCCharacters[i]->GetPlayer()->m_Score++;
-				apCloseCCharacters[i]->GetPlayer()->m_AuraPiecesNum++;
-				GameServer()->CreateSoundGlobal(SOUND_CTF_CAPTURE);
-				GameServer()->SendBroadcast("Hero found the aura pieces!", -1);
-				m_Owner = apCloseCCharacters[i]->GetPlayer()->GetCID();
-				m_OwnerCheck = true;
-				m_Distance = m_StartDistance;
-				if(apCloseCCharacters[i]->GetPlayer()->m_AuraPiecesNum >= 3)
+				if(apCloseCCharacters[i]->GetPlayer()->IsHero())
 				{
-					GameServer()->SendChatTarget(-1, "Hero got the 'Hero Aura'!");
-					GameServer()->m_apPlayers[m_Owner]->m_AuraNum++;
-					GameServer()->m_apPlayers[m_Owner]->m_AuraPiecesDel = true;
+					apCloseCCharacters[i]->GetPlayer()->m_Score++;
+					apCloseCCharacters[i]->GetPlayer()->m_AuraPiecesNum++;
+					GameServer()->CreateSoundGlobal(SOUND_CTF_CAPTURE);
+					GameServer()->SendBroadcast("Hero found the aura pieces!", -1);
+					m_Owner = apCloseCCharacters[i]->GetPlayer()->GetCID();
+					m_OwnerCheck = true;
+					m_Distance = m_StartDistance;
+					if(apCloseCCharacters[i]->GetPlayer()->m_AuraPiecesNum >= 3)
+					{
+						GameServer()->SendChatTarget(-1, "Hero got the 'Hero Aura'!");
+						GameServer()->m_apPlayers[m_Owner]->m_AuraNum++;
+						GameServer()->m_apPlayers[m_Owner]->m_AuraPiecesDel = true;
+					}
 				}
+				return;
 			}
-			return;
 		}
 	}
 
