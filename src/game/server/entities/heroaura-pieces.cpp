@@ -30,10 +30,13 @@ void CAuraPieces::Tick()
 	{
 		GameWorld()->RemoveEntity(this);
 		GameWorld()->DestroyEntity(this);
-	}else if(GameServer()->m_apPlayers[m_Owner] && !GameServer()->m_apPlayers[m_Owner]->IsHero())
+	}else if(GameServer()->m_apPlayers[m_Owner])
 	{
-		GameWorld()->RemoveEntity(this);
-		GameWorld()->DestroyEntity(this);
+		if(!GameServer()->m_apPlayers[m_Owner]->IsHero())
+		{
+			GameWorld()->RemoveEntity(this);
+			GameWorld()->DestroyEntity(this);
+		}
 	}
 	else
 	{

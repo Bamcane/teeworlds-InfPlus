@@ -461,23 +461,10 @@ void CPlayer::OnHero()
 
 bool CPlayer::IsZombie() const
 {
-	if(m_pCharacter->GetPlayer())
-	{
-		return (m_Role > ROLE_HERO);
-	}
-	else
-	{
-		return false;
-	}
+	return (m_Role > ROLE_HERO);
 }
 
 bool CPlayer::IsHero() const
 {
-	if(m_pCharacter->GetPlayer())
-	{
-		return (m_Role == ROLE_HERO);
-	}else
-	{
-		return false;
-	}
+	return (m_Role == ROLE_HERO);
 }
