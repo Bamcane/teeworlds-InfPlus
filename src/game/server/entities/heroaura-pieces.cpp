@@ -71,7 +71,6 @@ void CAuraPieces::Tick()
 		}
 		else
 		{
-			HitCharacter();
 			if( m_DistanceCheck )
 				m_Distance++;
 			else
