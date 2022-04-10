@@ -107,7 +107,7 @@ void CAuraPieces::HitCharacter()
 			{
 				apCloseCCharacters[i]->GetPlayer()->m_Score++;
 				apCloseCCharacters[i]->GetPlayer()->m_AuraPiecesNum++;
-				GameServer()->CreateSoundGlobal(SOUND_CTF_CAPTURE, -1);
+				GameServer()->CreateSoundGlobal(SOUND_CTF_CAPTURE);
 				GameServer()->SendBroadcast("Hero found the aura pieces!", -1);
 				m_Owner = apCloseCCharacters[i]->GetPlayer()->GetCID();
 				m_OwnerCheck = true;

@@ -108,8 +108,8 @@ public:
 	void Cure(int By = -1);
 	void OnHero();
 
-	inline bool IsZombie(){return (m_Role >= ROLE_ZOMBIE);}
-	inline bool IsHero(){return (m_Role == ROLE_HERO);}
+	inline bool IsZombie(){if(GameServer()->m_apPlayers[m_ClientID]){return (m_Role >= ROLE_ZOMBIE);}}
+	inline bool IsHero(){if(GameServer()->m_apPlayers[m_ClientID]){return (m_Role == ROLE_HERO);}}
 
 	int GetRole(){return m_Role;}
 
