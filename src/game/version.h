@@ -16,11 +16,11 @@
 #define GAME_NETVERSION "0.6 626fce9a778df4d4" //the std game version
 static const char GAME_RELEASE_VERSION[8] = {'0', '.', '6', '.', '4', 0};
 
-#define MOD_NAME "MyMod"
-#define MOD_VERSION "0.1"
-#define MOD_AUTHORS ""
+#define MOD_NAME "InfPlus"
+#define MOD_VERSION "0.3"
+#define MOD_AUTHORS "ErrorDreemurr"
 #define MOD_CREDITS ""
-#define MOD_THANKS ""
+#define MOD_THANKS "ST-Chara"
 #define MOD_SOURCES ""
 #endif
 #endif

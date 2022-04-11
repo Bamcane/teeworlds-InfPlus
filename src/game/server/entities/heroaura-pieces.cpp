@@ -61,8 +61,8 @@ void CAuraPieces::Tick()
 				if(GameServer()->m_apPlayers[m_Owner]->m_AuraPiecesNum == 0)
 				{
 					GameServer()->m_apPlayers[m_Owner]->m_AuraPiecesDel = false;
-					GameServer()->m_apPlayers[m_Owner]->m_AuraNum += 1;
 					GameServer()->m_apPlayers[m_Owner]->m_AuraCheck[GameServer()->m_apPlayers[m_Owner]->m_AuraNum] = new CAura(&(GameServer()->m_World), m_Owner, 30, 60, POWERUP_ARMOR);
+					GameServer()->m_apPlayers[m_Owner]->m_AuraNum += 1;
 
 				}
 				GameWorld()->RemoveEntity(this);

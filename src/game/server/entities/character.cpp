@@ -815,13 +815,13 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon)
 			Die(From, Weapon);
 		else if(m_pPlayer->IsHero() && m_pPlayer->m_AuraNum)
 		{
+			m_pPlayer->m_AuraNum--;
+			GameWorld()->RemoveEntity(m_pPlayer->m_AuraCheck[m_pPlayer->m_AuraNum]);
+			GameWorld()->DestroyEntity(m_pPlayer->m_AuraCheck[m_pPlayer->m_AuraNum]);
 			GameServer()->SendChatTarget(-1, "Hero rejects death...");
 			GameServer()->CreateSoundGlobal(SOUND_CTF_CAPTURE);
 			m_Health = 10;
 			m_Armor = 10;
-			GameWorld()->RemoveEntity(m_pPlayer->m_AuraCheck[m_pPlayer->m_AuraNum]);
-			GameWorld()->DestroyEntity(m_pPlayer->m_AuraCheck[m_pPlayer->m_AuraNum]);
-			m_pPlayer->m_AuraNum--;
 		}else
 		{
 			m_pPlayer->Infect(From,Weapon);
